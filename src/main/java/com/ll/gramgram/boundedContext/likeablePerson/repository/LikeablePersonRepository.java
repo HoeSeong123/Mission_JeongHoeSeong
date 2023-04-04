@@ -9,4 +9,6 @@ public interface LikeablePersonRepository extends JpaRepository<LikeablePerson, 
     List<LikeablePerson> findByFromInstaMemberId(Long fromInstaMemberId);
 
     LikeablePerson findById(Long id);
+
+    void deleteById(Long id);
 }
