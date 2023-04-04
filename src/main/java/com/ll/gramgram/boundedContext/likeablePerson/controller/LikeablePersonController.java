@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -59,5 +61,19 @@ public class LikeablePersonController {
         }
 
         return "usr/likeablePerson/list";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable("id") Long id) {
+        LikeablePerson likeablePerson = likeablePersonService.findById(id);
+
+        //소유권이 본인에게 있는지 체크
+        if (!likeablePerson.getFromInstaMemberUsername().equals(rq.getMember().getInstaMember().getUsername())) {
+            // 뒤로가기 하고 거기서 메세지 보여줘
+            return rq.historyBack("해당 항목에 대한 소유권이 없습니다.");
+        }
+
+        return rq.redirectWithMsg("/likeablePerson/list", rq.getMember().getInstaMember().getUsername());
     }
 }
