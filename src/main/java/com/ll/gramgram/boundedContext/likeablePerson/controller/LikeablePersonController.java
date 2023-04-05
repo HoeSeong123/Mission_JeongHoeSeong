@@ -70,8 +70,6 @@ public class LikeablePersonController {
 
         //소유권이 본인에게 있는지 체크
         if (!likeablePerson.getFromInstaMemberUsername().equals(rq.getMember().getInstaMember().getUsername())) {
-            // 뒤로가기 하고 거기서 메세지 보여줘
-
             return rq.historyBack("해당 항목에 대한 소유권이 없습니다.");
         }
 
