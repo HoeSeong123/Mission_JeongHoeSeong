@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +51,8 @@ public class LikeablePersonService {
     }
 
     public LikeablePerson findById(Long id) {
-        return likeablePersonRepository.findById(id);
+        LikeablePerson likeablePerson = likeablePersonRepository.findById(id).orElseThrow();
+        return likeablePerson;
     }
 
     @Transactional
