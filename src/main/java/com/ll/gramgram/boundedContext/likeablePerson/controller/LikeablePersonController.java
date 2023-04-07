@@ -69,15 +69,16 @@ public class LikeablePersonController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable("id") Long id) {
-        LikeablePerson likeablePerson = likeablePersonService.findById(id);
+        LikeablePerson likeablePerson = likeablePersonService.findById(id).orElse(null);
 
-        //소유권이 본인에게 있는지 체크
-        if (likeablePerson.getFromInstaMember().getId() != rq.getMember().getInstaMember().getId()) {
-            return rq.historyBack("해당 항목에 대한 소유권이 없습니다.");
-        }
+        RsData canActorDeleteRsData = likeablePersonService.canActorDelete(rq.getMember(), likeablePerson);
 
-        likeablePersonService.delete(likeablePerson);
+        if (canActorDeleteRsData.isFail()) return rq.historyBack(canActorDeleteRsData);
 
-        return rq.redirectWithMsg("/likeablePerson/list", "해당 항목이 삭제되었습니다.");
+        RsData deleteRs = likeablePersonService.delete(likeablePerson);
+
+        if(deleteRs.isFail()) return rq.historyBack(deleteRs);
+
+        return rq.redirectWithMsg("/likeablePerson/list", deleteRs);
     }
 }
