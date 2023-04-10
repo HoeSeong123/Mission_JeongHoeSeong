@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,7 +24,7 @@ public class LikeablePersonService {
 
     @Transactional
     public RsData<LikeablePerson> like(Member member, String username, int attractiveTypeCode) {
-        if ( member.hasConnectedInstaMember() == false ) {
+        if (member.hasConnectedInstaMember() == false) {
             return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");
         }
 
@@ -35,11 +36,21 @@ public class LikeablePersonService {
 
         for (LikeablePerson likeablePerson : fromLikeablePeople) {
             if (likeablePerson.getToInstaMember().getUsername().equals(username)) {
-                return RsData.of("F-3", "이미 등록된 호감상대입니다.");
+                if (likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
+                    return RsData.of("F-3", "이미 등록된 호감상대입니다.");
+                } else {
+                    String originAttractiveTypeDisplayName = likeablePerson.getAttractiveTypeDisplayName();     //기존 유형 저장
+                    LikeablePerson likeablePersonModify = likeablePersonRepository.findById(likeablePerson.getId()).orElseThrow();
+                    likeablePersonModify.setModifyDate(LocalDateTime.now());
+                    likeablePersonModify.setAttractiveTypeCode(attractiveTypeCode);
+                    likeablePersonRepository.save(likeablePersonModify);
+
+                    return RsData.of("S-2", "%s에 대한 호감사유를 %s에서 %s(으)로 변경합니다.".formatted(username, originAttractiveTypeDisplayName, likeablePersonModify.getAttractiveTypeDisplayName()));
+                }
             }
         }
 
-        if(fromLikeablePeople.size() == 10) {
+        if (fromLikeablePeople.size() == 10) {
             return RsData.of("F-4", "최대 10명까지 호감상대를 등록 할 수 있습니다.");
         }
 
@@ -86,7 +97,7 @@ public class LikeablePersonService {
         if (likeablePerson == null)
             return RsData.of("F-1", "이미 삭제되었습니다.");
 
-        if(actor.getInstaMember().getId() != likeablePerson.getFromInstaMember().getId())
+        if (actor.getInstaMember().getId() != likeablePerson.getFromInstaMember().getId())
             return RsData.of("F-2", "권한이 없습니다.");
 
         return RsData.of("S-1", "삭제가능합니다.");
