@@ -35,17 +35,18 @@ public class InstaMember {
     @Setter
     private String gender;
 
+
     @OneToMany(mappedBy = "fromInstaMember", cascade = {CascadeType.ALL})
     @OrderBy("id desc")
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
-    private List<LikeablePerson> fromLikeablePeople = new ArrayList<>();
+    private List<LikeablePerson> fromLikeablePeople = new ArrayList<>();    //내가 좋아하는 사람들 목록
 
     @OneToMany(mappedBy = "toInstaMember", cascade = {CascadeType.ALL})
     @OrderBy("id desc") // 정렬
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default // @Builder 가 있으면 ` = new ArrayList<>();` 가 작동하지 않는다. 그래서 이걸 붙여야 한다.
-    private List<LikeablePerson> toLikeablePeople = new ArrayList<>();
+    private List<LikeablePerson> toLikeablePeople = new ArrayList<>();      //나를 좋아하는 사람들 목록
 
     public void addFromLikeablePerson(LikeablePerson likeablePerson) {
         fromLikeablePeople.add(0, likeablePerson);
