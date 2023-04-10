@@ -214,4 +214,24 @@ public class LikeablePersonControllerTests {
                 .andExpect(handler().methodName("delete"))
                 .andExpect(status().is4xxClientError());
     }
+
+    @Test
+    @DisplayName("호감 삭제(권한이 없는 경우, 삭제 안되어야 함)")
+    @WithUserDetails("user2")
+    void t009() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(
+                        delete("/likeablePerson/1")
+                                .with(csrf()))
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(status().is4xxClientError());
+
+        assertThat(likeablePersonService.findById(1L).isPresent()).isEqualTo(true);
+    }
 }
