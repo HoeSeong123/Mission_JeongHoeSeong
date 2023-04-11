@@ -259,4 +259,27 @@ public class LikeablePersonControllerTests {
 
         assertThat(likeablePersonRepository.findAll().size()).isEqualTo(2);
     }
+
+    @Test
+    @DisplayName("동일한 사람에게 호감표시(사유 변경)")
+    @WithUserDetails("user3")
+    void t011() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(post("/likeablePerson/add")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("username", "insta_user4")
+                        .param("attractiveTypeCode", "2")
+                )
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("add"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/likeablePerson/list**"));
+
+        assertThat(likeablePersonRepository.findAll().size()).isEqualTo(2);
+    }
 }
