@@ -1,6 +1,7 @@
 package com.ll.gramgram.boundedContext.likeablePerson.controller;
 
 
+import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.ll.gramgram.boundedContext.likeablePerson.service.LikeablePersonService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,8 @@ public class LikeablePersonControllerTests {
     private MockMvc mvc;
     @Autowired
     private LikeablePersonService likeablePersonService;
+    @Autowired
+    private LikeablePersonRepository likeablePersonRepository;
 
     @Test
     @DisplayName("등록 폼(인스타 인증을 안해서 폼 대신 메세지)")
@@ -233,5 +236,27 @@ public class LikeablePersonControllerTests {
                 .andExpect(status().is4xxClientError());
 
         assertThat(likeablePersonService.findById(1L).isPresent()).isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("동일한 사람에게 호감표시(사유 중복)")
+    @WithUserDetails("user3")
+    void t010() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(post("/likeablePerson/add")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("username", "insta_user4")
+                        .param("attractiveTypeCode", "1")
+                )
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("add"))
+                .andExpect(status().is4xxClientError());
+
+        assertThat(likeablePersonRepository.findAll().size()).isEqualTo(2);
     }
 }
