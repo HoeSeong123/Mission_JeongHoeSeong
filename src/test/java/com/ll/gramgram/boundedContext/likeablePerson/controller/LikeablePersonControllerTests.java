@@ -282,4 +282,47 @@ public class LikeablePersonControllerTests {
 
         assertThat(likeablePersonRepository.findAll().size()).isEqualTo(2);
     }
+
+    @Test
+    @DisplayName("11명 이상의 호감 상대 등록")
+    @WithUserDetails("user3")
+    void t012() throws Exception {
+        ResultActions resultActions;
+
+        for (int i=0; i<8; i++) {
+            // WHEN
+            resultActions = mvc
+                    .perform(post("/likeablePerson/add")
+                            .with(csrf()) // CSRF 키 생성
+                            .param("username", "%s%s%s%s".formatted(i, i, i, i))
+                            .param("attractiveTypeCode", "1")
+                    )
+                    .andDo(print());
+
+            // THEN
+            resultActions
+                    .andExpect(handler().handlerType(LikeablePersonController.class))
+                    .andExpect(handler().methodName("add"))
+                    .andExpect(status().is3xxRedirection());
+            ;
+        }
+
+        // WHEN
+        resultActions = mvc
+                .perform(post("/likeablePerson/add")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("username", "8888")
+                        .param("attractiveTypeCode", "1")
+                )
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("add"))
+                .andExpect(status().is4xxClientError());
+        ;
+
+        assertThat(likeablePersonRepository.findAll().size()).isEqualTo(10);
+    }
 }
