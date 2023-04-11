@@ -29,8 +29,8 @@ spring:
               - email
               - profile
           naver:
-            client-id: C5wM3fQh1WMU0I0WP24j
-            client-secret: UAnvO1zSmt
+            client-id:
+            client-secret:
             authorization-grant-type: authorization_code
             scope:
             client-name: Naver # 클라이언트 이름 지정
