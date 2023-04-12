@@ -1,6 +1,7 @@
 package com.ll.gramgram.boundedContext.likeablePerson.controller;
 
 
+import com.ll.gramgram.base.appConfig.AppConfig;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.ll.gramgram.boundedContext.likeablePerson.service.LikeablePersonService;
@@ -325,6 +326,14 @@ public class LikeablePersonControllerTests {
                 .andExpect(status().is4xxClientError());
         ;
 
-        assertThat(likeablePersonRepository.findAll().size()).isEqualTo(10);
+        assertThat(likeablePersonRepository.findAll().size()).isEqualTo(AppConfig.getLikeablePersonFromMax());
+    }
+
+    @Test
+    @DisplayName("설정파일에 있는 최대 가능 호감 표시 수 가져오기")
+    void t013() throws Exception {
+        long likeablePersonFromMAx = AppConfig.getLikeablePersonFromMax();
+
+        assertThat(likeablePersonFromMAx).isEqualTo(10);
     }
 }
