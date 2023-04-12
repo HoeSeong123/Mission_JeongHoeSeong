@@ -34,23 +34,23 @@ public class LikeablePersonService {
             return RsData.of("F-1", "본인을 호감상대로 등록할 수 없습니다.");
         }
 
-        List<LikeablePerson> fromLikeablePeople = member.getInstaMember().getFromLikeablePeople();
+        LikeablePerson likeablePerson = likeablePersonRepository.findByFromInstaMemberIdAndToInstaMember_username(member.getInstaMember().getId(), username).orElse(null);
 
-        for (LikeablePerson likeablePerson : fromLikeablePeople) {
-            if (likeablePerson.getToInstaMember().getUsername().equals(username)) {
-                if (likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
-                    return RsData.of("F-3", "이미 등록된 호감상대입니다.");
-                } else {
-                    String originAttractiveTypeDisplayName = likeablePerson.getAttractiveTypeDisplayName();     //기존 유형 저장
-                    LikeablePerson likeablePersonModify = likeablePersonRepository.findById(likeablePerson.getId()).orElseThrow();
-                    likeablePersonModify.setModifyDate(LocalDateTime.now());
-                    likeablePersonModify.setAttractiveTypeCode(attractiveTypeCode);
-                    likeablePersonRepository.save(likeablePersonModify);
+        if(likeablePerson != null) {
+            if(likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
+                return RsData.of("F-3", "이미 등록된 호감상대입니다.");
+            } else {
+                String originAttractiveTypeDisplayName = likeablePerson.getAttractiveTypeDisplayName();     //기존 유형 저장
 
-                    return RsData.of("S-2", "%s에 대한 호감사유를 %s에서 %s(으)로 변경합니다.".formatted(username, originAttractiveTypeDisplayName, likeablePersonModify.getAttractiveTypeDisplayName()));
-                }
+                likeablePerson.setModifyDate(LocalDateTime.now());
+                likeablePerson.setAttractiveTypeCode(attractiveTypeCode);
+                likeablePersonRepository.save(likeablePerson);
+
+                return RsData.of("S-2", "%s에 대한 호감사유를 %s에서 %s(으)로 변경합니다.".formatted(username, originAttractiveTypeDisplayName, likeablePerson.getAttractiveTypeDisplayName()));
             }
         }
+
+        List<LikeablePerson> fromLikeablePeople = member.getInstaMember().getFromLikeablePeople();
 
         if (fromLikeablePeople.size() == AppConfig.getLikeablePersonFromMax()) {
             return RsData.of("F-4", "최대 10명까지 호감상대를 등록 할 수 있습니다.");
@@ -59,7 +59,7 @@ public class LikeablePersonService {
         InstaMember fromInstaMember = member.getInstaMember();
         InstaMember toInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
 
-        LikeablePerson likeablePerson = LikeablePerson
+        likeablePerson = LikeablePerson
                 .builder()
                 .fromInstaMember(fromInstaMember) // 호감을 표시하는 사람의 인스타 멤버
                 .fromInstaMemberUsername(member.getInstaMember().getUsername()) // 중요하지 않음
