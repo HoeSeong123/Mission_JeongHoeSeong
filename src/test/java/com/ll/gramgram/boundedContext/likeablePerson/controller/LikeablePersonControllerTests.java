@@ -283,38 +283,20 @@ public class LikeablePersonControllerTests {
                 .andExpect(redirectedUrlPattern("/likeablePerson/list**"));
 
         assertThat(likeablePersonService.findById(1L).orElseThrow().getAttractiveTypeCode()).isEqualTo(2);
-        assertThat(likeablePersonRepository.findAll().size()).isEqualTo(2);
+        assertThat(likeablePersonRepository.countByFromInstaMemberId(2L)).isEqualTo(2);
     }
 
     @Test
     @DisplayName("11명 이상의 호감 상대 등록")
-    @WithUserDetails("user3")
+    @WithUserDetails("KAKAO__2736347876")
     void t012() throws Exception {
         ResultActions resultActions;
-
-        for (int i=0; i<8; i++) {
-            // WHEN
-            resultActions = mvc
-                    .perform(post("/likeablePerson/add")
-                            .with(csrf()) // CSRF 키 생성
-                            .param("username", "%s%s%s%s".formatted(i, i, i, i))
-                            .param("attractiveTypeCode", "1")
-                    )
-                    .andDo(print());
-
-            // THEN
-            resultActions
-                    .andExpect(handler().handlerType(LikeablePersonController.class))
-                    .andExpect(handler().methodName("add"))
-                    .andExpect(status().is3xxRedirection());
-            ;
-        }
 
         // WHEN
         resultActions = mvc
                 .perform(post("/likeablePerson/add")
                         .with(csrf()) // CSRF 키 생성
-                        .param("username", "8888")
+                        .param("username", "ABCD")
                         .param("attractiveTypeCode", "1")
                 )
                 .andDo(print());
@@ -326,7 +308,7 @@ public class LikeablePersonControllerTests {
                 .andExpect(status().is4xxClientError());
         ;
 
-        assertThat(likeablePersonRepository.findAll().size()).isEqualTo(AppConfig.getLikeablePersonFromMax());
+        assertThat(likeablePersonRepository.countByFromInstaMemberId(4L)).isEqualTo(AppConfig.getLikeablePersonFromMax());
     }
 
     @Test
