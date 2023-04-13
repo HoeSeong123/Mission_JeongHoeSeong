@@ -30,9 +30,22 @@ public class NotProd {
             instaMemberService.connect(memberUser2, "insta_user2", "M");
             instaMemberService.connect(memberUser3, "insta_user3", "W");
             instaMemberService.connect(memberUser4, "insta_user4", "M");
+            instaMemberService.connect(memberUser5ByKakao, "insta_user_kakao", "M");
 
             likeablePersonService.like(memberUser3, "insta_user4", 1);
             likeablePersonService.like(memberUser3, "insta_user100", 2);
+
+            likeablePersonService.like(memberUser5ByKakao, "0000", 1);
+            likeablePersonService.like(memberUser5ByKakao, "1111", 1);
+            likeablePersonService.like(memberUser5ByKakao, "2222", 1);
+            likeablePersonService.like(memberUser5ByKakao, "3333", 1);
+            likeablePersonService.like(memberUser5ByKakao, "4454", 1);
+            likeablePersonService.like(memberUser5ByKakao, "5555", 1);
+            likeablePersonService.like(memberUser5ByKakao, "6666", 1);
+            likeablePersonService.like(memberUser5ByKakao, "7777", 1);
+            likeablePersonService.like(memberUser5ByKakao, "8888", 1);
+            likeablePersonService.like(memberUser5ByKakao, "9999", 1);
+
         };
     }
 }
