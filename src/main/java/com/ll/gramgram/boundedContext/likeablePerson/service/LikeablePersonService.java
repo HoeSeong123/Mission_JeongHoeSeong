@@ -46,9 +46,7 @@ public class LikeablePersonService {
             return RsData.of("F-3", "이미 등록된 호감상대입니다.");
         }
 
-        List<LikeablePerson> fromLikeablePeople = member.getInstaMember().getFromLikeablePeople();
-
-        if (fromLikeablePeople.size() == AppConfig.getLikeablePersonFromMax()) {
+        if (likeablePersonRepository.countByFromInstaMemberId(member.getInstaMember().getId()) == AppConfig.getLikeablePersonFromMax()) {
             return RsData.of("F-4", "최대 10명까지 호감상대를 등록 할 수 있습니다.");
         }
 
