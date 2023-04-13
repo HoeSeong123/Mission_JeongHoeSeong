@@ -37,22 +37,16 @@ public class LikeablePersonService {
         LikeablePerson likeablePerson = likeablePersonRepository.findByFromInstaMemberIdAndToInstaMember_username(member.getInstaMember().getId(), username).orElse(null);
 
         if(likeablePerson != null) {
-            if(likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
-                return RsData.of("F-3", "이미 등록된 호감상대입니다.");
-            } else {
+            if(likeablePerson.getAttractiveTypeCode() != attractiveTypeCode) {
                 String originAttractiveTypeDisplayName = likeablePerson.getAttractiveTypeDisplayName();     //기존 유형 저장
-
-                likeablePerson.setModifyDate(LocalDateTime.now());
                 likeablePerson.setAttractiveTypeCode(attractiveTypeCode);
-                likeablePersonRepository.save(likeablePerson);
 
                 return RsData.of("S-2", "%s에 대한 호감사유를 %s에서 %s(으)로 변경합니다.".formatted(username, originAttractiveTypeDisplayName, likeablePerson.getAttractiveTypeDisplayName()));
             }
+            return RsData.of("F-3", "이미 등록된 호감상대입니다.");
         }
 
-        List<LikeablePerson> fromLikeablePeople = member.getInstaMember().getFromLikeablePeople();
-
-        if (fromLikeablePeople.size() == AppConfig.getLikeablePersonFromMax()) {
+        if (likeablePersonRepository.countByFromInstaMemberId(member.getInstaMember().getId()) >= AppConfig.getLikeablePersonFromMax()) {
             return RsData.of("F-4", "최대 10명까지 호감상대를 등록 할 수 있습니다.");
         }
 
