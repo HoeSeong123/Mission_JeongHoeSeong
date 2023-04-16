@@ -24,6 +24,7 @@
                 <a href="javascript:;" onclick="if ( confirm('정말로 삭제하시겠습니까?') ) $(this).next().submit();">삭제</a>
                 <form hidden th:action="@{|/likeablePerson/${likeablePerson.id}|}" method="POST">
                     <input type="hidden" name="_method" value="delete">
+                </form>
             </li>
         </ul>
     </th:block>

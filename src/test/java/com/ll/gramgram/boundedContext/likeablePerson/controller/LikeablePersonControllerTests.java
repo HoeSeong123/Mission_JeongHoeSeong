@@ -1,6 +1,9 @@
 package com.ll.gramgram.boundedContext.likeablePerson.controller;
 
 
+import com.ll.gramgram.base.appConfig.AppConfig;
+import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
+import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.ll.gramgram.boundedContext.likeablePerson.service.LikeablePersonService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +33,8 @@ public class LikeablePersonControllerTests {
     private MockMvc mvc;
     @Autowired
     private LikeablePersonService likeablePersonService;
+    @Autowired
+    private LikeablePersonRepository likeablePersonRepository;
 
     @Test
     @DisplayName("등록 폼(인스타 인증을 안해서 폼 대신 메세지)")
@@ -233,5 +238,84 @@ public class LikeablePersonControllerTests {
                 .andExpect(status().is4xxClientError());
 
         assertThat(likeablePersonService.findById(1L).isPresent()).isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("동일한 사람에게 호감표시(사유 중복)")
+    @WithUserDetails("user3")
+    void t010() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(post("/likeablePerson/add")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("username", "insta_user4")
+                        .param("attractiveTypeCode", "1")
+                )
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("add"))
+                .andExpect(status().is4xxClientError());
+
+        assertThat(likeablePersonRepository.findAll().size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("동일한 사람에게 호감표시(사유 변경)")
+    @WithUserDetails("user3")
+    void t011() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(post("/likeablePerson/add")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("username", "insta_user4")
+                        .param("attractiveTypeCode", "2")
+                )
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("add"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/likeablePerson/list**"));
+
+        assertThat(likeablePersonService.findById(1L).orElseThrow().getAttractiveTypeCode()).isEqualTo(2);
+        assertThat(likeablePersonRepository.countByFromInstaMemberId(2L)).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("11명 이상의 호감 상대 등록")
+    @WithUserDetails("KAKAO__2736347876")
+    void t012() throws Exception {
+        ResultActions resultActions;
+
+        // WHEN
+        resultActions = mvc
+                .perform(post("/likeablePerson/add")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("username", "ABCD")
+                        .param("attractiveTypeCode", "1")
+                )
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("add"))
+                .andExpect(status().is4xxClientError());
+        ;
+
+        assertThat(likeablePersonRepository.countByFromInstaMemberId(4L)).isEqualTo(AppConfig.getLikeablePersonFromMax());
+    }
+
+    @Test
+    @DisplayName("설정파일에 있는 최대 가능 호감 표시 수 가져오기")
+    void t013() throws Exception {
+        long likeablePersonFromMAx = AppConfig.getLikeablePersonFromMax();
+
+        assertThat(likeablePersonFromMAx).isEqualTo(10);
     }
 }
