@@ -40,13 +40,14 @@ public class LikeablePersonService {
             if(likeablePerson.getAttractiveTypeCode() != attractiveTypeCode) {
                 String originAttractiveTypeDisplayName = likeablePerson.getAttractiveTypeDisplayName();     //기존 유형 저장
                 likeablePerson.setAttractiveTypeCode(attractiveTypeCode);
+                //영속성 컨텍스트에서 관리되는 엔티티는 값이 변경이 되었을 경우 이를 자동으로 인지해서 저장해준다
 
                 return RsData.of("S-2", "%s에 대한 호감사유를 %s에서 %s(으)로 변경합니다.".formatted(username, originAttractiveTypeDisplayName, likeablePerson.getAttractiveTypeDisplayName()));
             }
             return RsData.of("F-3", "이미 등록된 호감상대입니다.");
         }
 
-        if (likeablePersonRepository.countByFromInstaMemberId(member.getInstaMember().getId()) >= AppConfig.getLikeablePersonFromMax()) {
+        if (member.getInstaMember().getFromLikeablePeople().size() >= AppConfig.getLikeablePersonFromMax()) {
             return RsData.of("F-4", "최대 10명까지 호감상대를 등록 할 수 있습니다.");
         }
 

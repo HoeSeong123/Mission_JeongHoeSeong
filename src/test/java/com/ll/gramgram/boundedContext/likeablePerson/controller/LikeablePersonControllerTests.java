@@ -259,7 +259,7 @@ public class LikeablePersonControllerTests {
                 .andExpect(handler().methodName("add"))
                 .andExpect(status().is4xxClientError());
 
-        assertThat(likeablePersonRepository.findAll().size()).isEqualTo(2);
+        assertThat(likeablePersonRepository.countByFromInstaMemberId(2L)).isEqualTo(2);
     }
 
     @Test
