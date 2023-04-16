@@ -35,17 +35,9 @@ public class NotProd {
             likeablePersonService.like(memberUser3, "insta_user4", 1);
             likeablePersonService.like(memberUser3, "insta_user100", 2);
 
-            likeablePersonService.like(memberUser5ByKakao, "0000", 1);
-            likeablePersonService.like(memberUser5ByKakao, "1111", 1);
-            likeablePersonService.like(memberUser5ByKakao, "2222", 1);
-            likeablePersonService.like(memberUser5ByKakao, "3333", 1);
-            likeablePersonService.like(memberUser5ByKakao, "4454", 1);
-            likeablePersonService.like(memberUser5ByKakao, "5555", 1);
-            likeablePersonService.like(memberUser5ByKakao, "6666", 1);
-            likeablePersonService.like(memberUser5ByKakao, "7777", 1);
-            likeablePersonService.like(memberUser5ByKakao, "8888", 1);
-            likeablePersonService.like(memberUser5ByKakao, "9999", 1);
-
+            for (int i = 0; i < 10; i++) {
+                likeablePersonService.like(memberUser2, "insta_user%s".formatted(i), 1);
+            }
         };
     }
 }
