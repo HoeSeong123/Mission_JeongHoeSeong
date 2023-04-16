@@ -288,7 +288,7 @@ public class LikeablePersonControllerTests {
 
     @Test
     @DisplayName("11명 이상의 호감 상대 등록")
-    @WithUserDetails("KAKAO__2736347876")
+    @WithUserDetails("user2")
     void t012() throws Exception {
         ResultActions resultActions;
 
