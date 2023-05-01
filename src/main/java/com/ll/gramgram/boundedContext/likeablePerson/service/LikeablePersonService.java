@@ -15,8 +15,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -90,18 +88,10 @@ public class LikeablePersonService {
     public RsData canCancel(Member actor, LikeablePerson likeablePerson) {
         if (likeablePerson == null) return RsData.of("F-1", "이미 삭제되었습니다.");
 
-        Duration duration = Duration.between(LocalDateTime.now(), likeablePerson.getModifyUnlockDate());
-        long seconds = duration.toSeconds();
-
-        if(duration.toHours() > 0) {
-            return RsData.of("F-3", "3시간 이내에 등록된 호감은 삭제할 수 없습니다.(남은 시간 : %s시간 %s분 %s초)".formatted(seconds / 3600, (seconds / 60) % 60, seconds % 60));
-        }
-
         // 수행자의 인스타계정 번호
         long actorInstaMemberId = actor.getInstaMember().getId();
         // 삭제 대상의 작성자(호감표시한 사람)의 인스타계정 번호
         long fromInstaMemberId = likeablePerson.getFromInstaMember().getId();
-
 
         if (actorInstaMemberId != fromInstaMemberId)
             return RsData.of("F-2", "권한이 없습니다.");
@@ -164,7 +154,8 @@ public class LikeablePersonService {
         return modifyAttractive(actor, likeablePerson, attractiveTypeCode);
     }
 
-    private RsData<LikeablePerson> modifyAttractive(Member actor, LikeablePerson likeablePerson, int attractiveTypeCode) {
+    @Transactional
+    public RsData<LikeablePerson> modifyAttractive(Member actor, LikeablePerson likeablePerson, int attractiveTypeCode) {
         RsData canModifyRsData = canModifyLike(actor, likeablePerson);
 
         if (canModifyRsData.isFail()) {
@@ -210,13 +201,6 @@ public class LikeablePersonService {
     public RsData canModifyLike(Member actor, LikeablePerson likeablePerson) {
         if (!actor.hasConnectedInstaMember()) {
             return RsData.of("F-1", "먼저 본인의 인스타그램 아이디를 입력해주세요.");
-        }
-
-        Duration duration = Duration.between(LocalDateTime.now(), likeablePerson.getModifyUnlockDate());
-        long seconds = duration.toSeconds();
-
-        if(duration.toHours() > 0) {
-            return RsData.of("F-3", "3시간 이내에 등록/수정된 호감은 수정할 수 없습니다.(남은 시간 : %s시간 %s분 %s초)".formatted(seconds / 3600, (seconds / 60) % 60, seconds % 60));
         }
 
         InstaMember fromInstaMember = actor.getInstaMember();
