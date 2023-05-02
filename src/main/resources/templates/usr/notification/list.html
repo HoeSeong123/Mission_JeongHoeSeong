@@ -20,8 +20,9 @@
 
         <ul th:if="!${#lists.isEmpty(notifications)}" class="text-center mt-10">
             <div class="flex flex-col gap-4">
-                <li th:each="notification: ${notifications}">
-                    <div class="card bg-base-100 shadow-xl">
+                <li th:each="i : ${#numbers.sequence(notifications.size() - 1, 0, -1)}"
+                    th:with="notification=${notifications[i]}">
+                <div class="card bg-base-100 shadow-xl">
                         <div class="card-body">
                             <div class="flex flex-col gap-2">
                                 <div>
