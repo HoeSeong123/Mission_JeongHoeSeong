@@ -127,13 +127,14 @@ public class InstaMemberService {
         saveSnapshot(snapshot);
     }
 
-    public void whenAfterFromInstaMemberChangeGender(InstaMember instaMember, String oldGender) {
-        instaMember
+    public void whenAfterFromInstaMemberChangeGender(LikeablePerson likeablePerson, String oldGender) {
+        likeablePerson
+                .getFromInstaMember()
                 .getFromLikeablePeople()
-                .forEach(likeablePerson -> {
-                    InstaMember toInstaMember = likeablePerson.getToInstaMember();
-                    toInstaMember.decreaseLikesCount(oldGender, likeablePerson.getAttractiveTypeCode());
-                    toInstaMember.increaseLikesCount(instaMember.getGender(), likeablePerson.getAttractiveTypeCode());
+                .forEach(likeablePersonTemp -> {
+                    InstaMember toInstaMember = likeablePersonTemp.getToInstaMember();
+                    toInstaMember.decreaseLikesCount(oldGender, likeablePersonTemp.getAttractiveTypeCode());
+                    toInstaMember.increaseLikesCount(likeablePerson.getFromInstaMember().getGender(), likeablePersonTemp.getAttractiveTypeCode());
 
                     InstaMemberSnapshot snapshot = toInstaMember.snapshot("FromInstaMemberChangeGender");
 
