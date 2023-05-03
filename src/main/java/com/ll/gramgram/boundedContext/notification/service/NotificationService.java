@@ -1,6 +1,8 @@
 package com.ll.gramgram.boundedContext.notification.service;
 
 import com.ll.gramgram.base.appConfig.AppConfig;
+import com.ll.gramgram.base.event.EventAfterModifyAttractiveType;
+import com.ll.gramgram.base.rsData.RsData;
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMemberSnapshot;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
@@ -59,11 +61,10 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public void updateReadDate(List<Notification> notifications) {
+    public void modifyReadDate(List<Notification> notifications) {
         for(Notification notification : notifications) {
-            if(notification.getReadDate() == null) {
-                notification.setReadDate(LocalDateTime.now());
-            }
+            notification.updateReadDate();
+            notificationRepository.save(notification);
         }
     }
 

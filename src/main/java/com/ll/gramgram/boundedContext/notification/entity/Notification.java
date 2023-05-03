@@ -1,6 +1,8 @@
 package com.ll.gramgram.boundedContext.notification.entity;
 
+import com.ll.gramgram.base.appConfig.AppConfig;
 import com.ll.gramgram.base.baseEntity.BaseEntity;
+import com.ll.gramgram.base.rsData.RsData;
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -19,7 +21,6 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @ToString(callSuper = true)
 public class Notification extends BaseEntity {
-    @Setter
     private LocalDateTime readDate;
     @ManyToOne
     @ToString.Exclude
@@ -49,6 +50,14 @@ public class Notification extends BaseEntity {
             case 2 -> "성격";
             default -> "능력";
         };
+    }
+
+    public void updateReadDate() {
+        if (this.readDate != null) {
+            return;
+        }
+
+        this.readDate = LocalDateTime.now();
     }
 
     public String getNewAttractiveTypeDisplayName() {
