@@ -26,14 +26,14 @@ public class NotificationEventListener {
     public void listen(EventAfterLike event) {
         notificationService.whenAfterLike(event.getLikeablePerson());
     }
-//
-//    @EventListener
-//    public void listen(EventBeforeCancelLike event) {
-//        instaMemberService.whenBeforeCancelLike(event.getLikeablePerson());
-//    }
-//
-//    @EventListener
-//    public void listen(EventAfterFromInstaMemberChangeGender event) {
-//        instaMemberService.whenAfterFromInstaMemberChangeGender(event.getInstaMember(), event.getOldGender());
-//    }
+
+    @EventListener
+    public void listen(EventBeforeCancelLike event) {
+        notificationService.whenAfterCancelLike(event.getLikeablePerson());
+    }
+
+    @EventListener
+    public void listen(EventAfterFromInstaMemberChangeGender event) {
+        notificationService.whenAfterFromInstaMemberChangeGender(event.getLikeablePerson(), event.getOldGender());
+    }
 }

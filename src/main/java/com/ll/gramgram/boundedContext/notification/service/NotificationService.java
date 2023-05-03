@@ -68,29 +68,41 @@ public class NotificationService {
         }
     }
 
-//    public void whenBeforeCancelLike(LikeablePerson likeablePerson) {
-//        InstaMember fromInstaMember = likeablePerson.getFromInstaMember();
-//        InstaMember toInstaMember = likeablePerson.getToInstaMember();
-//
-//        toInstaMember.decreaseLikesCount(fromInstaMember.getGender(), likeablePerson.getAttractiveTypeCode());
-//    }
+    public void whenAfterCancelLike(LikeablePerson likeablePerson) {
+        InstaMember fromInstaMember = likeablePerson.getFromInstaMember();
+        InstaMember toInstaMember = likeablePerson.getToInstaMember();
 
-//    public void whenAfterFromInstaMemberChangeGender(LikeablePerson likeablePerson, String oldGender) {
-//        InstaMember fromInstaMember = likeablePerson.getFromInstaMember();
-//        InstaMember toInstaMember = likeablePerson.getToInstaMember();
-//
-//        Notification notification = Notification
-//                .builder()
-//                .readDate(null)
-//                .fromInstaMember(fromInstaMember) // 호감을 표시하는 사람의 인스타 멤버
-//                .toInstaMember(toInstaMember) // 호감을 받는 사람의 인스타 멤버
-//                .typeCode("Like")
-//                .oldGender(null)
-//                .oldAttractiveTypeCode(0)
-//                .newGender(fromInstaMember.getGender())
-//                .newAttractiveTypeCode(likeablePerson.getAttractiveTypeCode())
-//                .build();
-//
-//        notificationRepository.save(notification);
-//    }
+        Notification notification = Notification
+                .builder()
+                .readDate(null)
+                .fromInstaMember(fromInstaMember) // 호감을 표시하는 사람의 인스타 멤버
+                .toInstaMember(toInstaMember) // 호감을 받는 사람의 인스타 멤버
+                .typeCode("Cancel")
+                .oldGender(null)
+                .oldAttractiveTypeCode(0)
+                .newGender(fromInstaMember.getGender())
+                .newAttractiveTypeCode(likeablePerson.getAttractiveTypeCode())
+                .build();
+
+        notificationRepository.save(notification);
+    }
+
+    public void whenAfterFromInstaMemberChangeGender(LikeablePerson likeablePerson, String oldGender) {
+        InstaMember fromInstaMember = likeablePerson.getFromInstaMember();
+        InstaMember toInstaMember = likeablePerson.getToInstaMember();
+
+        Notification notification = Notification
+                .builder()
+                .readDate(null)
+                .fromInstaMember(fromInstaMember) // 호감을 표시하는 사람의 인스타 멤버
+                .toInstaMember(toInstaMember) // 호감을 받는 사람의 인스타 멤버
+                .typeCode("ModifyGender")
+                .oldGender(oldGender)
+                .oldAttractiveTypeCode(0)
+                .newGender(fromInstaMember.getGender())
+                .newAttractiveTypeCode(likeablePerson.getAttractiveTypeCode())
+                .build();
+
+        notificationRepository.save(notification);
+    }
 }

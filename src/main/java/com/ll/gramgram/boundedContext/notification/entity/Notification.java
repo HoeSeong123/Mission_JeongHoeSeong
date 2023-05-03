@@ -28,7 +28,7 @@ public class Notification extends BaseEntity {
     @ManyToOne
     @ToString.Exclude
     private InstaMember fromInstaMember; // 메세지를 발생시킨 행위를 한 사람(호감표시한 사람)
-    private String typeCode; // 호감표시=Like, 호감사유변경=ModifyAttractiveType,
+    private String typeCode; // 호감표시=Like, 호감사유변경=ModifyAttractiveType, 호감취소=Cancel, 호감표시자성별변경=ModifyGender
     private String oldGender; // 해당사항 없으면 null
     private int oldAttractiveTypeCode; // 해당사항 없으면 0
     private String newGender; // 해당사항 없으면 null
