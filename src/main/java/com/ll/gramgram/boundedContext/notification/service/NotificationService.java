@@ -17,6 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class NotificationService {
     private final NotificationRepository notificationRepository;
 
@@ -24,86 +25,49 @@ public class NotificationService {
         return notificationRepository.findByToInstaMember(toInstaMember);
     }
 
-    public void whenAfterModifyAttractiveType(LikeablePerson likeablePerson, int oldAttractiveTypeCode) {
-        InstaMember fromInstaMember = likeablePerson.getFromInstaMember();
-        InstaMember toInstaMember = likeablePerson.getToInstaMember();
-
-        Notification notification = Notification
-                .builder()
-                .readDate(null)
-                .fromInstaMember(fromInstaMember) // 호감을 표시하는 사람의 인스타 멤버
-                .toInstaMember(toInstaMember) // 호감을 받는 사람의 인스타 멤버
-                .typeCode("ModifyAttractiveType")
-                .oldGender(null)
-                .oldAttractiveTypeCode(oldAttractiveTypeCode)
-                .newGender(fromInstaMember.getGender())
-                .newAttractiveTypeCode(likeablePerson.getAttractiveTypeCode())
-                .build();
-
-        notificationRepository.save(notification);
-    }
-
-    public void whenAfterLike(LikeablePerson likeablePerson) {
-        InstaMember fromInstaMember = likeablePerson.getFromInstaMember();
-        InstaMember toInstaMember = likeablePerson.getToInstaMember();
-
-        Notification notification = Notification
-                .builder()
-                .readDate(null)
-                .fromInstaMember(fromInstaMember) // 호감을 표시하는 사람의 인스타 멤버
-                .toInstaMember(toInstaMember) // 호감을 받는 사람의 인스타 멤버
-                .typeCode("Like")
-                .oldGender(null)
-                .oldAttractiveTypeCode(0)
-                .newGender(fromInstaMember.getGender())
-                .newAttractiveTypeCode(likeablePerson.getAttractiveTypeCode())
-                .build();
-
-        notificationRepository.save(notification);
+    @Transactional
+    public RsData<Notification> whenAfterModifyAttractiveType(LikeablePerson likeablePerson, int oldAttractiveTypeCode) {
+        return make(likeablePerson, "ModifyAttractiveType", oldAttractiveTypeCode, likeablePerson.getFromInstaMember().getGender());
     }
 
     @Transactional
-    public void modifyReadDate(List<Notification> notifications) {
+    public RsData<Notification> whenAfterLike(LikeablePerson likeablePerson) {
+        return make(likeablePerson, "Like", 0, null);
+    }
+
+    @Transactional
+    public RsData<Notification> modifyReadDate(List<Notification> notifications) {
         for(Notification notification : notifications) {
             notification.updateReadDate();
         }
+
+        return RsData.of("S-1", "읽음 처리 되었습니다.");
     }
 
-    public void whenAfterCancelLike(LikeablePerson likeablePerson) {
-        InstaMember fromInstaMember = likeablePerson.getFromInstaMember();
-        InstaMember toInstaMember = likeablePerson.getToInstaMember();
-
-        Notification notification = Notification
-                .builder()
-                .readDate(null)
-                .fromInstaMember(fromInstaMember) // 호감을 표시하는 사람의 인스타 멤버
-                .toInstaMember(toInstaMember) // 호감을 받는 사람의 인스타 멤버
-                .typeCode("Cancel")
-                .oldGender(null)
-                .oldAttractiveTypeCode(0)
-                .newGender(fromInstaMember.getGender())
-                .newAttractiveTypeCode(likeablePerson.getAttractiveTypeCode())
-                .build();
-
-        notificationRepository.save(notification);
+    @Transactional
+    public RsData<Notification> whenAfterCancelLike(LikeablePerson likeablePerson) {
+        return make(likeablePerson, "Cancel", 0, null);
     }
 
-    public void whenAfterFromInstaMemberChangeGender(LikeablePerson likeablePerson, String oldGender) {
-        InstaMember fromInstaMember = likeablePerson.getFromInstaMember();
-        InstaMember toInstaMember = likeablePerson.getToInstaMember();
+    @Transactional
+    public RsData<Notification> whenAfterFromInstaMemberChangeGender(LikeablePerson likeablePerson, String oldGender) {
+        return make(likeablePerson, "ModifyGender", 0, oldGender);
+    }
 
+    public RsData<Notification> make(LikeablePerson likeablePerson, String typeCode, int oldAttractiveTypeCode, String oldGender) {
         Notification notification = Notification
                 .builder()
-                .readDate(null)
-                .fromInstaMember(fromInstaMember) // 호감을 표시하는 사람의 인스타 멤버
-                .toInstaMember(toInstaMember) // 호감을 받는 사람의 인스타 멤버
-                .typeCode("ModifyGender")
+                .typeCode(typeCode)
+                .toInstaMember(likeablePerson.getToInstaMember())
+                .fromInstaMember(likeablePerson.getFromInstaMember())
+                .oldAttractiveTypeCode(oldAttractiveTypeCode)
                 .oldGender(oldGender)
-                .oldAttractiveTypeCode(0)
-                .newGender(fromInstaMember.getGender())
                 .newAttractiveTypeCode(likeablePerson.getAttractiveTypeCode())
+                .newGender(likeablePerson.getFromInstaMember().getGender())
                 .build();
 
         notificationRepository.save(notification);
+
+        return RsData.of("S-1", "알림 메세지가 생성되었습니다.", notification);
     }
 }
