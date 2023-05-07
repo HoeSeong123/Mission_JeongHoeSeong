@@ -40,22 +40,22 @@
                                     내용
                                 </div>
                                 <div th:if="${notification.typeCode == 'Like'}">
-                                    어떤 <span class="badge badge-primary" th:text="${notification.newGenderDisplayName}"></span>이 당신을 <span
-                                        class="badge badge-primary" th:text="${notification.newAttractiveTypeDisplayName}"></span> 때문에 좋아합니다.
+                                    어떤 <span class="badge badge-primary" th:text="${notification.getGenderDisplayName(notification.getNewGender())}"></span>이 당신을 <span
+                                        class="badge badge-primary" th:text="${notification.getAttractiveTypeDisplayName(notification.getNewAttractiveTypeCode())}"></span> 때문에 좋아합니다.
                                 </div>
                                 <div th:if="${notification.typeCode == 'ModifyAttractiveType'}">
-                                    어떤 <span class="badge badge-primary" th:text="${notification.newGenderDisplayName}"></span>이 당신에 대한 호감사유를 <span
-                                        class="badge badge-primary" th:text="${notification.oldAttractiveTypeDisplayName}"></span>에서 <span
-                                        class="badge badge-primary" th:text="${notification.newAttractiveTypeDisplayName}"></span>으로 변경했습니다.
+                                    어떤 <span class="badge badge-primary" th:text="${notification.getGenderDisplayName(notification.getNewGender())}"></span>이 당신에 대한 호감사유를 <span
+                                        class="badge badge-primary" th:text="${notification.getAttractiveTypeDisplayName(notification.getOldAttractiveTypeCode())}"></span>에서 <span
+                                        class="badge badge-primary" th:text="${notification.getAttractiveTypeDisplayName(notification.getNewAttractiveTypeCode())}"></span>으로 변경했습니다.
                                 </div>
                                 <div th:if="${notification.typeCode == 'Cancel'}">
-                                    당신을 <span class="badge badge-primary" th:text="${notification.newAttractiveTypeDisplayName}"></span> 때문에 좋아하던 <span
-                                        class="badge badge-primary" th:text="${notification.newGenderDisplayName}"></span>이 당신에 대한 호감을 취소했습니다.
+                                    당신을 <span class="badge badge-primary" th:text="${notification.getAttractiveTypeDisplayName(notification.getNewAttractiveTypeCode())}"></span> 때문에 좋아하던 <span
+                                        class="badge badge-primary" th:text="${notification.getGenderDisplayName(notification.getNewGender())}"></span>이 당신에 대한 호감을 취소했습니다.
                                 </div>
                                 <div th:if="${notification.typeCode == 'ModifyGender'}">
-                                    당신을 <span class="badge badge-primary" th:text="${notification.newAttractiveTypeDisplayName}"></span> 때문에 좋아하던 <span
-                                        class="badge badge-primary" th:text="${notification.oldGenderDisplayName}"></span>이 성별을 <span
-                                        class="badge badge-primary" th:text="${notification.newGenderDisplayName}"></span>으로 변경했습니다.
+                                    당신을 <span class="badge badge-primary" th:text="${notification.getAttractiveTypeDisplayName(notification.getNewAttractiveTypeCode())}"></span> 때문에 좋아하던 <span
+                                        class="badge badge-primary" th:text="${notification.getGenderDisplayName(notification.getOldGender())}"></span>이 성별을 <span
+                                        class="badge badge-primary" th:text="${notification.getGenderDisplayName(notification.getNewGender())}"></span>으로 변경했습니다.
                                 </div>
                             </div>
                         </div>

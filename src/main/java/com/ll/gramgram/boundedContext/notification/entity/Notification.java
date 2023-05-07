@@ -44,14 +44,6 @@ public class Notification extends BaseEntity {
         else return "%s시간 전".formatted(hour);
     }
 
-    public String getOldAttractiveTypeDisplayName() {
-        return switch (oldAttractiveTypeCode) {
-            case 1 -> "외모";
-            case 2 -> "성격";
-            default -> "능력";
-        };
-    }
-
     public void updateReadDate() {
         if (this.readDate != null) {
             return;
@@ -60,23 +52,16 @@ public class Notification extends BaseEntity {
         this.readDate = LocalDateTime.now();
     }
 
-    public String getNewAttractiveTypeDisplayName() {
-        return switch (newAttractiveTypeCode) {
+    public String getAttractiveTypeDisplayName(int attractiveTypeCode) {
+        return switch (attractiveTypeCode) {
             case 1 -> "외모";
             case 2 -> "성격";
             default -> "능력";
         };
     }
 
-    public String getOldGenderDisplayName() {
-        return switch (oldGender) {
-            case "W" -> "여성";
-            default -> "남성";
-        };
-    }
-
-    public String getNewGenderDisplayName() {
-        return switch (newGender) {
+    public String getGenderDisplayName(String gender) {
+        return switch (gender) {
             case "W" -> "여성";
             default -> "남성";
         };
