@@ -70,4 +70,8 @@ public class NotificationService {
 
         return RsData.of("S-1", "알림 메세지가 생성되었습니다.", notification);
     }
+
+    public boolean countUnreadNotificationsByToInstaMember(InstaMember instaMember) {
+        return notificationRepository.countByToInstaMemberAndReadDateIsNull(instaMember) > 0;
+    }
 }
