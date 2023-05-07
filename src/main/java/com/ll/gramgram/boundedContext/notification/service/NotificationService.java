@@ -10,6 +10,7 @@ import com.ll.gramgram.boundedContext.notification.entity.Notification;
 import com.ll.gramgram.boundedContext.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -61,10 +62,10 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
+    @Transactional
     public void modifyReadDate(List<Notification> notifications) {
         for(Notification notification : notifications) {
             notification.updateReadDate();
-            notificationRepository.save(notification);
         }
     }
 
