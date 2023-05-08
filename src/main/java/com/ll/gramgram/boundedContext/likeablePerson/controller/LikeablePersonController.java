@@ -125,13 +125,13 @@ public class LikeablePersonController {
     @GetMapping("/toList")
     public String showToList(@RequestParam(value = "gender", defaultValue = "") String gender,
                              @RequestParam(value = "attractiveTypeCode", defaultValue = "") String attractiveTypeCode,
-                             @RequestParam(value = "sortCode", defaultValue = "1") int sortCode,
+                             @RequestParam(value = "sortCode", defaultValue = "1") String sortCode,
                              Model model) {
         InstaMember instaMember = rq.getMember().getInstaMember();
 
         // 인스타인증을 했는지 체크
         if (instaMember != null) {
-            List<LikeablePerson> likeablePeople = likeablePersonService.getLikeablePeople(instaMember, gender);
+            List<LikeablePerson> likeablePeople = likeablePersonService.getLikeablePeople(instaMember, gender, attractiveTypeCode);
 
             model.addAttribute("likeablePeople", likeablePeople);
         }
