@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -95,6 +96,10 @@ public class LikeablePersonService {
 
         if (actorInstaMemberId != fromInstaMemberId)
             return RsData.of("F-2", "권한이 없습니다.");
+
+        if(LocalDateTime.now().isBefore(likeablePerson.getModifyUnlockDate())) {
+            return RsData.of("F-3", "아직 호감사유 변경 가능 시간이 지나지 않았습니다.");
+        }
 
         return RsData.of("S-1", "삭제가능합니다.");
     }
@@ -207,6 +212,10 @@ public class LikeablePersonService {
 
         if (!Objects.equals(likeablePerson.getFromInstaMember().getId(), fromInstaMember.getId())) {
             return RsData.of("F-2", "해당 호감표시를 취소할 권한이 없습니다.");
+        }
+
+        if(LocalDateTime.now().isBefore(likeablePerson.getModifyUnlockDate())) {
+            return RsData.of("F-3", "아직 호감사유 변경 가능 시간이 지나지 않았습니다.");
         }
 
 
