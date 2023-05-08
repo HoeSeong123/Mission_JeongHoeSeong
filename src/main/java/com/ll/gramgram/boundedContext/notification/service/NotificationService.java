@@ -1,10 +1,7 @@
 package com.ll.gramgram.boundedContext.notification.service;
 
-import com.ll.gramgram.base.appConfig.AppConfig;
-import com.ll.gramgram.base.event.EventAfterModifyAttractiveType;
 import com.ll.gramgram.base.rsData.RsData;
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
-import com.ll.gramgram.boundedContext.instaMember.entity.InstaMemberSnapshot;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.ll.gramgram.boundedContext.notification.entity.Notification;
 import com.ll.gramgram.boundedContext.notification.repository.NotificationRepository;
@@ -12,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,39 +18,20 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     public List<Notification> findByToInstaMember(InstaMember toInstaMember) {
-        return notificationRepository.findByToInstaMember(toInstaMember);
+        return notificationRepository.findByToInstaMemberOrderByIdDesc(toInstaMember);
     }
 
     @Transactional
-    public RsData<Notification> whenAfterModifyAttractiveType(LikeablePerson likeablePerson, int oldAttractiveTypeCode) {
-        return make(likeablePerson, "ModifyAttractiveType", oldAttractiveTypeCode, likeablePerson.getFromInstaMember().getGender());
+    public RsData<Notification> makeLike(LikeablePerson likeablePerson) {
+        return make(likeablePerson, "LIKE", 0, null);
     }
 
     @Transactional
-    public RsData<Notification> whenAfterLike(LikeablePerson likeablePerson) {
-        return make(likeablePerson, "Like", 0, null);
+    public RsData<Notification> makeModifyAttractive(LikeablePerson likeablePerson, int oldAttractiveTypeCode) {
+        return make(likeablePerson, "MODIFY_ATTRACTIVE_TYPE", oldAttractiveTypeCode, likeablePerson.getFromInstaMember().getGender());
     }
 
-    @Transactional
-    public RsData<Notification> modifyReadDate(List<Notification> notifications) {
-        for(Notification notification : notifications) {
-            notification.updateReadDate();
-        }
-
-        return RsData.of("S-1", "읽음 처리 되었습니다.");
-    }
-
-    @Transactional
-    public RsData<Notification> whenAfterCancelLike(LikeablePerson likeablePerson) {
-        return make(likeablePerson, "Cancel", 0, null);
-    }
-
-    @Transactional
-    public RsData<Notification> whenAfterFromInstaMemberChangeGender(LikeablePerson likeablePerson, String oldGender) {
-        return make(likeablePerson, "ModifyGender", 0, oldGender);
-    }
-
-    public RsData<Notification> make(LikeablePerson likeablePerson, String typeCode, int oldAttractiveTypeCode, String oldGender) {
+    private RsData<Notification> make(LikeablePerson likeablePerson, String typeCode, int oldAttractiveTypeCode, String oldGender) {
         Notification notification = Notification
                 .builder()
                 .typeCode(typeCode)
@@ -69,6 +46,20 @@ public class NotificationService {
         notificationRepository.save(notification);
 
         return RsData.of("S-1", "알림 메세지가 생성되었습니다.", notification);
+    }
+
+    public List<Notification> findByToInstaMember_username(String username) {
+        return notificationRepository.findByToInstaMember_usernameOrderByIdDesc(username);
+    }
+
+    @Transactional
+    public RsData markAsRead(List<Notification> notifications) {
+        notifications
+                .stream()
+                .filter(notification -> !notification.isRead())
+                .forEach(Notification::markAsRead);
+
+        return RsData.of("S-1", "읽음 처리 되었습니다.");
     }
 
     public boolean countUnreadNotificationsByToInstaMember(InstaMember instaMember) {
