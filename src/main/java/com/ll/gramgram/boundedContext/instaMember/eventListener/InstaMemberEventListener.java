@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
+@Transactional
 public class InstaMemberEventListener {
     private final InstaMemberService instaMemberService;
 
     @EventListener
-    @Transactional
     public void listen(EventAfterModifyAttractiveType event) {
         instaMemberService.whenAfterModifyAttractiveType(event.getLikeablePerson(), event.getOldAttractiveTypeCode());
     }
@@ -33,6 +33,6 @@ public class InstaMemberEventListener {
 
     @EventListener
     public void listen(EventAfterFromInstaMemberChangeGender event) {
-        instaMemberService.whenAfterFromInstaMemberChangeGender(event.getLikeablePerson(), event.getOldGender());
+        instaMemberService.whenAfterFromInstaMemberChangeGender(event.getInstaMember(), event.getOldGender());
     }
 }
