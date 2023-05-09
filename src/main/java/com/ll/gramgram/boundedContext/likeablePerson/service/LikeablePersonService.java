@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -218,41 +220,17 @@ public class LikeablePersonService {
         return RsData.of("S-1", "호감사유변경이 가능합니다.");
     }
 
-    public List<LikeablePerson> getLikeablePeople(InstaMember instaMember, String gender, String attractiveTypeCode) {
-//        // 해당 인스타회원이 좋아하는 사람들 목록
-//        if(gender.equals("")) {
-//            return instaMember.getToLikeablePeople();
-//        }
-//        else {
-//            List<LikeablePerson> likeablePeople = new ArrayList<>();
-//            for (LikeablePerson likeablePerson : instaMember.getToLikeablePeople()) {
-//                if (likeablePerson.getFromInstaMember().getGender().equals(gender)) {
-//                    likeablePeople.add(likeablePerson);
-//                }
-//            }
-//            return likeablePeople;
-//        }
-
+    public List<LikeablePerson> sortLikeablePeople(InstaMember instaMember, String gender, String attractiveTypeCode, String sortCode) {
         List<LikeablePerson> likeablePeople = instaMember.getToLikeablePeople();
+        Stream<LikeablePerson> stream = likeablePeople.stream();
 
         if (!gender.equals("")) {
-            Iterator<LikeablePerson> iter = likeablePeople.iterator();
-            while(iter.hasNext()) {
-                LikeablePerson likeablePerson = iter.next();
-                if (!likeablePerson.getFromInstaMember().getGender().equals(gender)) {
-                    iter.remove();
-                }
-            }
+            stream = stream.filter(e -> e.getFromInstaMember().getGender().equals(gender));
         }
         if (!attractiveTypeCode.equals("")) {
-            Iterator<LikeablePerson> iter = likeablePeople.iterator();
-            while(iter.hasNext()) {
-                LikeablePerson likeablePerson = iter.next();
-                if (likeablePerson.getAttractiveTypeCode() != Integer.parseInt(attractiveTypeCode)) {
-                    iter.remove();
-                }
-            }
+            stream = stream.filter(e -> e.getAttractiveTypeCode() == Integer.parseInt(attractiveTypeCode));
         }
-        return likeablePeople;
+
+        return stream.collect(Collectors.toList());
     }
 }
