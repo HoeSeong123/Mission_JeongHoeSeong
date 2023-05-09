@@ -231,6 +231,35 @@ public class LikeablePersonService {
             stream = stream.filter(e -> e.getAttractiveTypeCode() == Integer.parseInt(attractiveTypeCode));
         }
 
+        switch (sortCode) {
+            case "1":
+                stream = stream
+                        .sorted(Comparator.comparing(LikeablePerson::getModifyDate, Comparator.reverseOrder()));
+                break;
+            case "2":
+                stream = stream
+                        .sorted(Comparator.comparing(LikeablePerson::getModifyDate));
+                break;
+            case "3":
+                stream = stream
+                        .sorted((e2, e1) -> e1.getFromInstaMember().getToLikeablePeople().size() - e2.getFromInstaMember().getToLikeablePeople().size());
+                break;
+            case "4":
+                stream = stream
+                        .sorted((e1, e2) -> e1.getFromInstaMember().getToLikeablePeople().size() - e2.getFromInstaMember().getToLikeablePeople().size());
+                break;
+            case "5":
+                stream = stream
+                        .sorted(Comparator.comparing((LikeablePerson e) -> e.getFromInstaMember().getGender(), Comparator.reverseOrder())
+                                .thenComparing(LikeablePerson::getModifyDate, Comparator.reverseOrder()));
+                break;
+            case "6":
+                stream = stream
+                        .sorted(Comparator.comparing(LikeablePerson::getAttractiveTypeCode)
+                                .thenComparing(LikeablePerson::getModifyDate, Comparator.reverseOrder()));
+                break;
+        }
+
         return stream.collect(Collectors.toList());
     }
 }
