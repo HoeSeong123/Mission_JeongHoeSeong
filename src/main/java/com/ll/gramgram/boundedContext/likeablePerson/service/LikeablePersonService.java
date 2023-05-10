@@ -246,7 +246,7 @@ public class LikeablePersonService {
                 break;
             case "4":
                 stream = stream
-                        .sorted((e1, e2) -> e1.getFromInstaMember().getToLikeablePeople().size() - e2.getFromInstaMember().getToLikeablePeople().size());
+                        .sorted(Comparator.comparingInt(e -> e.getFromInstaMember().getToLikeablePeople().size()));
                 break;
             case "5":
                 stream = stream
