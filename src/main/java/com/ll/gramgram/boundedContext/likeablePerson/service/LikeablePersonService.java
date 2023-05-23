@@ -15,9 +15,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -218,5 +218,48 @@ public class LikeablePersonService {
 
 
         return RsData.of("S-1", "호감사유변경이 가능합니다.");
+    }
+
+    public List<LikeablePerson> sortLikeablePeople(InstaMember instaMember, String gender, String attractiveTypeCode, String sortCode) {
+        List<LikeablePerson> likeablePeople = instaMember.getToLikeablePeople();
+        Stream<LikeablePerson> stream = likeablePeople.stream();
+
+        if (!gender.equals("")) {
+            stream = stream.filter(e -> e.getFromInstaMember().getGender().equals(gender));
+        }
+        if (!attractiveTypeCode.equals("")) {
+            stream = stream.filter(e -> e.getAttractiveTypeCode() == Integer.parseInt(attractiveTypeCode));
+        }
+
+        switch (sortCode) {
+            case "1":
+                stream = stream
+                        .sorted(Comparator.comparing(LikeablePerson::getModifyDate, Comparator.reverseOrder()));
+                break;
+            case "2":
+                stream = stream
+                        .sorted(Comparator.comparing(LikeablePerson::getModifyDate));
+                break;
+            case "3":
+                stream = stream
+                        .sorted((e2, e1) -> e1.getFromInstaMember().getToLikeablePeople().size() - e2.getFromInstaMember().getToLikeablePeople().size());
+                break;
+            case "4":
+                stream = stream
+                        .sorted(Comparator.comparingInt(e -> e.getFromInstaMember().getToLikeablePeople().size()));
+                break;
+            case "5":
+                stream = stream
+                        .sorted(Comparator.comparing((LikeablePerson e) -> e.getFromInstaMember().getGender(), Comparator.reverseOrder())
+                                .thenComparing(LikeablePerson::getModifyDate, Comparator.reverseOrder()));
+                break;
+            case "6":
+                stream = stream
+                        .sorted(Comparator.comparing(LikeablePerson::getAttractiveTypeCode)
+                                .thenComparing(LikeablePerson::getModifyDate, Comparator.reverseOrder()));
+                break;
+        }
+
+        return stream.collect(Collectors.toList());
     }
 }
